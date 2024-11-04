@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { saveRegistration } from '../firebase.js';
 import { Loader2 } from 'lucide-react';
 import Modal from './ui/Modal.jsx';
+import {countries} from '../assets/countries.js';
 
 const RegistrationForm = () => {
   const [loading, setLoading] = useState(false);
@@ -100,11 +101,11 @@ const RegistrationForm = () => {
             onChange={handleChange}
           >
             <option value="" disabled selected>Select your country</option>
-            <option value="us">United States</option>
-            <option value="uk">United Kingdom</option>
-            <option value="ca">Canada</option>
-            <option value="au">Australia</option>
-            {/* Add more countries as needed */}
+            {countries.map(country => (
+              <option key={country.code} value={country.code}>
+                {country.name}
+              </option>
+            ))}
           </select>
         </div>
 
