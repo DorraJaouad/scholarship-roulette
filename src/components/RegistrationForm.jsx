@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './ui/card.jsx'
 import { saveRegistration } from '../firebase.js';
-import { Label } from './ui/label.jsx';
-import { Input } from './ui/input.jsx';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select.jsx';
-import { Button } from './ui/button.jsx';
 import { Loader2 } from 'lucide-react';
+import Modal from './ui/Modal.jsx';
 
 const RegistrationForm = () => {
   const [loading, setLoading] = useState(false);
@@ -13,11 +9,12 @@ const RegistrationForm = () => {
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
     country: '',
     degree: '',
-    fieldOfStudy: ''
+    fieldOfStudy: '',
   });
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState({ title: '', message: '' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,142 +22,148 @@ const RegistrationForm = () => {
     try {
       await saveRegistration(formData);
       setLoading(false);
-      alert('Registration successful! Check your email for payment instructions.');
+      setModalContent({
+        title: 'Registration Successful',
+        message: 'Check your email for payment instructions.'
+      });
+      setModalOpen(true);
     } catch (error) {
       setLoading(false);
-      alert('Registration failed. Please try again.');
+      setModalContent({
+        title: 'Registration Failed',
+        message: 'Please try again.'
+      });
+      setModalOpen(true);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value
     }));
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">ScholarshipRoulette Pre-Registration</CardTitle>
-        <CardDescription className="text-center">
-          Join the draw for a chance to win a fully funded scholarship in Europe
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
-              <Input
-                id="firstName"
-                name="firstName"
-                placeholder="John"
-                required
-                onChange={handleChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input
-                id="lastName"
-                name="lastName"
-                placeholder="Doe"
-                required
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
+    <div className="w-full max-w-lg mx-auto bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-2xl font-bold text-center mb-4">Scholarship Roulette Pre-Registration</h2>
+      <p className="text-center mb-6">Join the draw for a chance to win a fully funded scholarship in Europe</p>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="john@example.com"
+            <label htmlFor="firstName" className="block font-semibold">First Name</label>
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              placeholder="John"
               required
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               onChange={handleChange}
             />
           </div>
-
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              placeholder="+1234567890"
+            <label htmlFor="lastName" className="block font-semibold">Last Name</label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              placeholder="Doe"
               required
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               onChange={handleChange}
             />
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="country">Country of Residence</Label>
-            <Select name="country" required>
-              <SelectTrigger>
-                <SelectValue placeholder="Select your country" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="us">United States</SelectItem>
-                <SelectItem value="uk">United Kingdom</SelectItem>
-                <SelectItem value="ca">Canada</SelectItem>
-                <SelectItem value="au">Australia</SelectItem>
-                {/* Add more countries as needed */}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="space-y-2">
+          <label htmlFor="email" className="block font-semibold">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="john@example.com"
+            required
+            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onChange={handleChange}
+          />
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="degree">Preferred Degree Level</Label>
-            <Select name="degree" required>
-              <SelectTrigger>
-                <SelectValue placeholder="Select degree level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bachelors">Bachelor's Degree</SelectItem>
-                <SelectItem value="masters">Master's Degree</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="space-y-2">
+          <label htmlFor="country" className="block font-semibold">Country of Residence</label>
+          <select
+            id="country"
+            name="country"
+            required
+            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onChange={handleChange}
+          >
+            <option value="" disabled selected>Select your country</option>
+            <option value="us">United States</option>
+            <option value="uk">United Kingdom</option>
+            <option value="ca">Canada</option>
+            <option value="au">Australia</option>
+            {/* Add more countries as needed */}
+          </select>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="fieldOfStudy">Field of Study</Label>
-            <Select name="fieldOfStudy" required>
-              <SelectTrigger>
-                <SelectValue placeholder="Select field of study" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="business">Business & Management</SelectItem>
-                <SelectItem value="engineering">Engineering</SelectItem>
-                <SelectItem value="cs">Computer Science</SelectItem>
-                <SelectItem value="arts">Arts & Humanities</SelectItem>
-                <SelectItem value="science">Natural Sciences</SelectItem>
-                {/* Add more fields as needed */}
-              </SelectContent>
-            </Select>
-          </div>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Button 
-          className="w-full"
-          onClick={handleSubmit}
+        <div className="space-y-2">
+          <label htmlFor="degree" className="block font-semibold">Preferred Degree Level</label>
+          <select
+            id="degree"
+            name="degree"
+            required
+            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onChange={handleChange}
+          >
+            <option value="" disabled selected>Select degree level</option>
+            <option value="bachelors">Bachelor's Degree</option>
+            <option value="masters">Master's Degree</option>
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="fieldOfStudy" className="block font-semibold">Field of Study</label>
+          <select
+            id="fieldOfStudy"
+            name="fieldOfStudy"
+            required
+            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onChange={handleChange}
+          >
+            <option value="" disabled selected>Select field of study</option>
+            <option value="business">Business & Management</option>
+            <option value="engineering">Engineering</option>
+            <option value="cs">Computer Science</option>
+            <option value="arts">Arts & Humanities</option>
+            <option value="science">Natural Sciences</option>
+            {/* Add more fields as needed */}
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white rounded-md p-2 hover:bg-blue-700 transition"
           disabled={loading}
         >
           {loading ? (
-            <>
+            <span className="flex items-center justify-center">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Processing
-            </>
+            </span>
           ) : (
             'Pre-Register Now'
           )}
-        </Button>
-      </CardFooter>
-    </Card>
+        </button>
+      </form>
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={modalContent.title}
+        message={modalContent.message}
+      />
+    </div>
   );
 };
 
