@@ -33,7 +33,17 @@ export default {
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
-      }
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i, // Matches image file extensions
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[hash].[ext]', // Keep original name and hash the file
+            outputPath: 'assets/images', // Directory within `dist` to store images
+          },
+        },
+      },
     ]
   },
   resolve: {

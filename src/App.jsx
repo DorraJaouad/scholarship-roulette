@@ -6,7 +6,7 @@ import RegistrationForm from './components/RegistrationForm';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gray-100" style={{ borderRadius: '15px' }}>
         {/* Updated Navigation */}
         <nav className="bg-white shadow-md rounded-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
