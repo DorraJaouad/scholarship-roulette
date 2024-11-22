@@ -12,7 +12,7 @@ export default {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
-    publicPath: '/scholarship-roulette/',
+    publicPath: '/',
   },
   plugins: [
     new Dotenv(),
